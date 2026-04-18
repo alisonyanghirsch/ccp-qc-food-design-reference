@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCP vs QC — Food Design Reference | Year 9</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg:        #0b0c14;
+    --surface:   #13141f;
+    --surface2:  #1c1d2e;
+    --border:    rgba(255,255,255,0.07);
+    --text:      #e8eaf0;
+    --muted:     #7b7f99;
+    --red:       #ff4560;
+    --red-glow:  rgba(255,69,96,0.18);
+    --red-dim:   rgba(255,69,96,0.08);
+    --green:     #00d4aa;
+    --green-glow:rgba(0,212,170,0.18);
+    --green-dim: rgba(0,212,170,0.08);
+    --amber:     #f5a623;
+    --radius:    14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background mesh ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 10% 0%, rgba(255,69,96,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 35% at 90% 10%, rgba(0,212,170,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 50% 100%, rgba(100,80,220,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ── Header ── */
+  .hero { text-align: center; margin-bottom: 52px; animation: fadeUp 0.7s ease both; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 5px 14px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 6vw, 54px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 .grad-red {
+    background: linear-gradient(135deg, #ff4560, #ff8a65);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero h1 .grad-green {
+    background: linear-gradient(135deg, #00d4aa, #00b4d8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    max-width: 520px; margin: 0 auto 32px;
+    color: var(--muted); font-size: 15px;
+  }
+
+  /* ── Legend pills ── */
+  .legend {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 0;
+  }
+
+  .legend-pill {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    max-width: 340px;
+    text-align: left;
+  }
+  .legend-pill.ccp { border-color: rgba(255,69,96,0.3); background: var(--red-dim); }
+  .legend-pill.qc  { border-color: rgba(0,212,170,0.3); background: var(--green-dim); }
+
+  .legend-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .ccp .legend-icon { background: rgba(255,69,96,0.2); }
+  .qc  .legend-icon { background: rgba(0,212,170,0.2); }
+
+  .legend-pill strong {
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    display: block; margin-bottom: 2px;
+  }
+  .ccp .legend-pill strong, .ccp strong { color: var(--red); }
+  .qc  .legend-pill strong, .qc  strong { color: var(--green); }
+  .legend-pill span { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+  /* ── Divider ── */
+  .section-divider {
+    display: flex; align-items: center; gap: 16px;
+    margin: 52px 0 28px;
+    animation: fadeUp 0.5s ease both;
+  }
+  .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .dish-chip {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 8px 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    white-space: nowrap;
+  }
+  .dish-chip .emoji { font-size: 20px; }
+
+  /* ── Grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    animation: fadeUp 0.6s ease both;
+  }
+  @media (max-width: 680px) { .cards-grid { grid-template-columns: 1fr; } }
+
+  .column-header {
+    grid-column: span 1;
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2px;
+  }
+  .column-header.ccp { color: var(--red); background: var(--red-dim); }
+  .column-header.qc  { color: var(--green); background: var(--green-dim); }
+  .column-header svg { width: 14px; height: 14px; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: default;
+  }
+  .card:hover { transform: translateY(-2px); }
+
+  .card.ccp {
+    border-color: rgba(255,69,96,0.2);
+    background: linear-gradient(135deg, var(--red-dim) 0%, var(--surface) 100%);
+  }
+  .card.ccp:hover { box-shadow: 0 6px 24px rgba(255,69,96,0.15); }
+
+  .card.qc {
+    border-color: rgba(0,212,170,0.2);
+    background: linear-gradient(135deg, var(--green-dim) 0%, var(--surface) 100%);
+  }
+  .card.qc:hover { box-shadow: 0 6px 24px rgba(0,212,170,0.15); }
+
+  .card-header {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 10px;
+  }
+
+  .card-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .ccp .card-icon { background: rgba(255,69,96,0.2); }
+  .qc  .card-icon { background: rgba(0,212,170,0.15); }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    line-height: 1.3;
+  }
+  .ccp .card-title { color: #ff7a8a; }
+  .qc  .card-title { color: #4eecd4; }
+
+  .card-rows { display: flex; flex-direction: column; gap: 8px; }
+
+  .row-item {
+    display: flex; gap: 8px;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.03);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid transparent;
+  }
+  .ccp .row-item { border-left-color: rgba(255,69,96,0.5); }
+  .qc  .row-item { border-left-color: rgba(0,212,170,0.5); }
+
+  .row-label {
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); min-width: 38px; padding-top: 1px; flex-shrink: 0;
+  }
+  .row-text { font-size: 12px; color: var(--text); line-height: 1.5; }
+
+  .risk-text {
+    font-size: 11px;
+    color: #a78bfa;
+    font-style: italic;
+  }
+  .ccp .risk-text { color: #ffb3be; }
+  .qc  .risk-text { color: #a7f3d0; }
+
+  /* ── Summary table ── */
+  .summary-section {
+    margin-top: 60px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .summary-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .quick-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .quick-table th {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 12px 16px;
+    background: var(--surface2);
+    text-align: left;
+  }
+  .quick-table th:nth-child(2) { color: var(--red); }
+  .quick-table th:nth-child(3) { color: var(--green); }
+  .quick-table td {
+    padding: 10px 16px;
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .quick-table tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+
+  /* ── Footer ── */
+  .doc-footer {
+    margin-top: 60px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-divider:nth-of-type(1) { animation-delay: 0.1s; }
+  .section-divider:nth-of-type(2) { animation-delay: 0.2s; }
+  .section-divider:nth-of-type(3) { animation-delay: 0.3s; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HERO ── -->
+  <header class="hero">
+    <div class="hero-badge"><span></span>Year 9 Food Design · Reference Guide</div>
+    <h1>
+      <span class="grad-red">Critical Control</span><br>
+      vs <span class="grad-green">Quality Control</span>
+    </h1>
+    <p>Know the difference between keeping food <em>safe</em> and making food <em>great</em>.</p>
+
+    <div class="legend">
+      <div class="legend-pill ccp">
+        <div class="legend-icon">🛡️</div>
+        <div>
+          <strong>CCP — Critical Control Point</strong>
+          <span>A step where a mistake can make someone <em>sick</em>. These are non-negotiable — food safety comes first, always.</span>
+        </div>
+      </div>
+      <div class="legend-pill qc">
+        <div class="legend-icon">⭐</div>
+        <div>
+          <strong>QC — Quality Control</strong>
+          <span>A check to make your food look, taste, and feel <em>excellent</em>. Getting it wrong means poor results — not illness.</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ════════════════════════════════════════ -->
+  <!--  DISH 1 · FRUIT SALAD                  -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="dish-chip"><span class="emoji">🍓</span> Fruit Salad</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <div class="cards-grid">
+
+    <div class="column-header ccp">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Critical Control Points (Safety)
+    </div>
+    <div class="column-header qc">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      Quality Control (Excellence)
+    </div>
+
+    <!-- CCP 1 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">🧼</div>
+        <div class="card-title">Handwashing</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Wash hands with soap and warm water for 20 seconds before touching any ready-to-eat fruit.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Prevents bacteria and viruses from your hands transferring to food that won't be cooked.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Harmful pathogens like <em>E. coli</em> could contaminate the fruit → food poisoning.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 1 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">🔪</div>
+        <div class="card-title">Consistent Cut Size</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Use the claw and bridge grip to cut fruit into even, bite-sized pieces (~2 cm).</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Consistent sizing creates a pleasant texture and an appealing, professional presentation.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Uneven chunks make the salad hard to eat and visually unappealing.</div></div>
+      </div>
+    </div>
+
+    <!-- CCP 2 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">🟩</div>
+        <div class="card-title">Green Board Only</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Use a dedicated green chopping board and clean knife exclusively for fruit and vegetables.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Prevents cross-contamination from surfaces previously used for other high-risk foods.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Bacteria like <em>Salmonella</em> could transfer to ready-to-eat fruit → severe illness.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 2 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">🍋</div>
+        <div class="card-title">Prevent Browning</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Squeeze fresh lemon or citrus juice over cut apple and banana immediately after cutting.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Acid stops the flesh from oxidising (enzymic browning) when exposed to air.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Apple and banana turn brown within minutes → looks bruised and unappetising.</div></div>
+      </div>
+    </div>
+
+    <!-- CCP 3 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">🚿</div>
+        <div class="card-title">Wash All Produce</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Wash all fresh fruits under clean running water before peeling or cutting.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Removes physical hazards (dirt, pesticides) and reduces bacteria on the skin.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">The knife blade drags bacteria or dirt from unwashed skin directly into the edible flesh.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 3 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">🎨</div>
+        <div class="card-title">Colour Variety</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Deliberately include a mix of differently coloured fruits — red, green, yellow, orange.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Meets the Aesthetics (A) criterion in your ACCESSFM specification. Food should look vibrant.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">A single-colour salad looks monotonous and fails your design spec.</div></div>
+      </div>
+    </div>
+
+    <!-- CCP 4 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">❄️</div>
+        <div class="card-title">Chill Below 5°C</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Store finished fruit salad in the fridge at or below 5°C if not eaten immediately.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Temperature control slows or stops harmful bacterial growth — it's a critical food safety limit.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Bacteria multiply rapidly at room temperature in a moist dish → unsafe to eat.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 4 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title">Balanced Proportions</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Use a similar volume of each fruit so no single ingredient dominates the bowl.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Ensures every spoonful has variety and meets your ACCESSFM Function statement.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Too much of one fruit makes it feel undesigned — just a pile, not a crafted dish.</div></div>
+      </div>
+    </div>
+
+  </div><!-- /cards-grid fruit salad -->
+
+
+  <!-- ════════════════════════════════════════ -->
+  <!--  DISH 2 · PASTA SALAD                  -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="dish-chip"><span class="emoji">🍝</span> Pasta Salad</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <div class="cards-grid">
+
+    <div class="column-header ccp">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Critical Control Points (Safety)
+    </div>
+    <div class="column-header qc">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      Quality Control (Excellence)
+    </div>
+
+    <!-- CCP 1 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">🧼</div>
+        <div class="card-title">Handwashing First</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Wash hands with soap for 20 seconds before handling any ingredient.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Removes bacteria before you touch food. Non-negotiable at the start of every practical.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Bacteria from hands contaminate vegetables or pasta → food poisoning.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 1 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">⏱️</div>
+        <div class="card-title">Cook Pasta Al Dente</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Taste pasta one minute before the packet time — it should be firm to the bite.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Pasta continues cooking after draining. Al dente texture holds up when tossed with dressing.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Overcooked pasta goes mushy and falls apart into a starchy, unpleasant paste.</div></div>
+      </div>
+    </div>
+
+    <!-- CCP 2 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">🔥</div>
+        <div class="card-title">Pan Handle Safety</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Always turn pan handles inward on the hob. Use oven gloves when handling hot pots.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Prevents the pan from being knocked off the hob, causing severe burns and scalds.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">A knocked pan of boiling water → serious scalding injury. This is a physical hazard CCP.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 2 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">🚰</div>
+        <div class="card-title">Drain Thoroughly</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Drain pasta in a colander and shake to remove all excess cooking water.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Water in the pasta dilutes dressing and stops it coating the pasta properly.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Watery salad where dressing slides off → bland, poorly seasoned dish.</div></div>
+      </div>
+    </div>
+
+    <!-- CCP 3 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">🧊</div>
+        <div class="card-title">Cool Before Dressing</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Cool cooked pasta rapidly (rinse under cold water) before adding mayonnaise or perishable dressings.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Warm pasta + mayonnaise creates ideal conditions for rapid bacterial growth.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Bacteria multiply in the warm, moist environment → food unsafe to eat in minutes.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 3 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">🥦</div>
+        <div class="card-title">Uniform Vegetable Dice</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Dice vegetables into small, uniform pieces using the claw grip.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Every forkful should have a balanced mix of pasta, veg, and dressing.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Oversized vegetable chunks overpower the pasta and create uneven eating experience.</div></div>
+      </div>
+    </div>
+
+    <!-- CCP 4 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title">Allergen Control</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Keep allergens (gluten, dairy, eggs in dressing) strictly separate. Use clean utensils.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Allergens are a chemical food safety hazard. The safe limit is zero contact.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Even a trace of an allergen can trigger a severe or life-threatening allergic reaction.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 4 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">🧂</div>
+        <div class="card-title">Season and Taste</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Taste the finished salad and adjust seasoning before serving.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Pasta absorbs salt from cooking water. Seasoning needs adjusting after the dressing is added.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Bland, unseasoned dish that fails your taste/function design criteria.</div></div>
+      </div>
+    </div>
+
+  </div><!-- /cards-grid pasta salad -->
+
+
+  <!-- ════════════════════════════════════════ -->
+  <!--  DISH 3 · EGG DISH                     -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section-divider">
+    <div class="section-divider-line"></div>
+    <div class="dish-chip"><span class="emoji">🥚</span> Egg Dish</div>
+    <div class="section-divider-line"></div>
+  </div>
+
+  <div class="cards-grid">
+
+    <div class="column-header ccp">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Critical Control Points (Safety)
+    </div>
+    <div class="column-header qc">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      Quality Control (Excellence)
+    </div>
+
+    <!-- CCP 1 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">🌡️</div>
+        <div class="card-title">Cook Eggs Fully</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Cook eggs until both yolk and white are fully set with no runny parts.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Heat destroys harmful bacteria that are naturally present in raw eggs.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Undercooked eggs can harbour <em>Salmonella</em> → severe food poisoning, especially risky for young people.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 1 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">⏱️</div>
+        <div class="card-title">Precise Timing</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Use a timer — never guess boiling or cooking time for eggs.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Egg proteins set at precise temperatures. Even 2 extra minutes changes the texture completely.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Overcooking creates a grey-green sulphur ring around the yolk and rubbery whites.</div></div>
+      </div>
+    </div>
+
+    <!-- CCP 2 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">🧼</div>
+        <div class="card-title">Wash After Raw Egg</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Wash hands, boards, and utensils with hot soapy water immediately after touching raw eggs or shells.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Raw eggshells carry bacteria that easily transfer to ready-to-eat surfaces.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Bacteria cross-contaminates other ingredients → spreads illness to anyone who eats the dish.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 2 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">🧊</div>
+        <div class="card-title">Ice Bath After Boiling</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Plunge boiled eggs into ice-cold water immediately after cooking.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Stops internal cooking instantly. Also shrinks the egg away from the shell → much easier peeling.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Eggs continue cooking → shell sticks and tears the white, leaving a messy, uneven result.</div></div>
+      </div>
+    </div>
+
+    <!-- CCP 3 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">🐚</div>
+        <div class="card-title">Check for Shell</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Carefully inspect peeled eggs and finished dish for any shell fragments before serving.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Eggshell is a hard physical hazard that can cut the mouth or cause a choking hazard.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">A sharp shell fragment injures the consumer's mouth → physical hazard incident.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 3 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">🥄</div>
+        <div class="card-title">Gentle Mixing</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Fold mayonnaise or yoghurt into chopped egg until just combined — don't over-mix.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Gentle folding keeps a slightly chunky texture that has a far better mouthfeel.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Over-mixing turns egg into a homogenous, unappetising paste — no texture at all.</div></div>
+      </div>
+    </div>
+
+    <!-- CCP 4 -->
+    <div class="card ccp">
+      <div class="card-header">
+        <div class="card-icon">❄️</div>
+        <div class="card-title">Refrigerate Quickly</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Store finished egg dish in the fridge at or below 5°C immediately after making.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Eggs are high-protein, high-moisture — a perfect breeding ground for bacteria at room temperature.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">Leaving egg dish out allows explosive bacterial growth in under two hours.</div></div>
+      </div>
+    </div>
+
+    <!-- QC 4 -->
+    <div class="card qc">
+      <div class="card-header">
+        <div class="card-icon">🎨</div>
+        <div class="card-title">Garnish and Present</div>
+      </div>
+      <div class="card-rows">
+        <div class="row-item"><div class="row-label">What</div><div class="row-text">Add a garnish (paprika, chives, cress) and present on a clean white dish or plate.</div></div>
+        <div class="row-item"><div class="row-label">Why</div><div class="row-text">Meets the Aesthetics (A) criterion in ACCESSFM. We eat with our eyes first.</div></div>
+        <div class="row-item"><div class="row-label">Risk</div><div class="row-text risk-text">A plain, ungarnished dish looks unfinished and scores poorly on presentation.</div></div>
+      </div>
+    </div>
+
+  </div><!-- /cards-grid egg dish -->
+
+
+  <!-- ════════════════════════════════════════ -->
+  <!--  QUICK REFERENCE TABLE                 -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="summary-section">
+    <h2>⚡ Quick Reference — CCP vs QC</h2>
+    <table class="quick-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>🛡️ Critical Control Point (CCP)</th>
+          <th>⭐ Quality Control (QC)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Purpose</strong></td>
+          <td>Prevent food safety hazards</td>
+          <td>Ensure great taste, texture &amp; look</td>
+        </tr>
+        <tr>
+          <td><strong>If missed…</strong></td>
+          <td>Someone could get seriously ill</td>
+          <td>Food looks or tastes bad</td>
+        </tr>
+        <tr>
+          <td><strong>Examples</strong></td>
+          <td>Handwashing, cooking temperature, cross-contamination prevention</td>
+          <td>Consistent cut size, preventing browning, timing pasta</td>
+        </tr>
+        <tr>
+          <td><strong>Hazard type</strong></td>
+          <td>Biological, chemical, physical</td>
+          <td>Aesthetic &amp; sensory</td>
+        </tr>
+        <tr>
+          <td><strong>On your planning sheet</strong></td>
+          <td>Write <em>exactly</em> WHY the control prevents illness</td>
+          <td>Write <em>exactly</em> HOW it improves the dish</td>
+        </tr>
+        <tr>
+          <td><strong>First step — always</strong></td>
+          <td colspan="2" style="text-align:center; color: var(--red)">Step 1 is ALWAYS handwashing with a full CCP explanation — every single practical.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Footer ── -->
+  <div class="doc-footer">
+    Year 9 Food Design · Dragon International School · 09DT · Eat Well, Live Well Unit<br>
+    Prepared by Ms Yang · Reference for student use
+  </div>
+
+</div><!-- /page -->
+</body>
+</html>
